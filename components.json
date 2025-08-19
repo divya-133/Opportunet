@@ -1,0 +1,7 @@
+{
+  "path": "./components",
+  "aliases": {
+    "@/components": "./components",
+    "@/lib": "./lib"
+  }
+}
