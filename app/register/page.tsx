@@ -17,22 +17,40 @@ export default function RegisterPage() {
 
   const router = useRouter();
 
-  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError("");
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields.");
+  if (!name || !email || !password || !confirmPassword) {
+    setError("Please fill in all fields.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Registration failed");
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    // Simulate registration success → redirect to /verify-email
-    router.push("/verify-email");
-  };
+    // Success → redirect to dashboard
+    router.push("/user-dashboard");
+  } catch (err) {
+    setError("Something went wrong");
+  }
+};
 
   return (
     <main className="min-h-screen bg-[#f9fafb] flex items-center justify-center px-4">
@@ -149,3 +167,4 @@ export default function RegisterPage() {
     </main>
   );
 }
+
